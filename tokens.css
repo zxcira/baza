@@ -1,0 +1,57 @@
+/* ============================================================================
+   БАЗА — общие design tokens
+   Подключается и сайтом (index.html), и админ-панелью (admin.html).
+   Меняешь здесь — меняется везде.
+
+   Палитра снята с аватарки клуба (100% монохром, 0 насыщенных пикселей).
+   Единственный акцент — неоново-зелёный. Контрасты проверены:
+     #00FF66 на #000000 = 15.50:1
+     #00CC55 на #000000 =  9.77:1
+     #FFFFFF на #000000 = 21.00:1
+     #B9BDB5 на #000000 = 11.01:1
+     #9AA096 на #000000 =  7.84:1
+   #6B716A (4.20:1) и #575556 (2.84:1) для текста не используются.
+   ========================================================================= */
+:root{
+  /* surfaces */
+  --bg:            #000000;
+  --bg-elev:       #0A0C09;
+  --surface:       #12190C;
+  --surface-2:     #1A1D16;
+  --surface-3:     #232323;
+
+  /* lines */
+  --line:          #2A3026;
+  --line-strong:   #3B4436;
+
+  /* text */
+  --fg:            #FFFFFF;
+  --fg-2:          #E3E4E4;
+  --fg-3:          #B9BDB5;
+  --fg-muted:      #9AA096;
+
+  /* accent */
+  --acc:           #00FF66;
+  --acc-dim:       #00CC55;
+  --acc-deep:      #0B3D1F;
+  --acc-glow:      rgba(0,255,102,.28);
+  --on-acc:        #000000;
+
+  /* semantic */
+  --busy:          #8A9088;
+  --warn:          #FFC53D;
+  --danger:        #FF4D4D;
+
+  /* type */
+  --f-display: "Unbounded", system-ui, sans-serif;
+  --f-body:    "Onest", system-ui, -apple-system, sans-serif;
+  --f-mono:    ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* rhythm */
+  --s1:.25rem; --s2:.5rem;  --s3:.75rem; --s4:1rem;
+  --s5:1.5rem; --s6:2rem;   --s7:3rem;   --s8:4.5rem;
+  --r: 4px;
+  --tap: 44px;
+  --shell: 1280px;
+  --ease: cubic-bezier(.2,.7,.3,1);
+}

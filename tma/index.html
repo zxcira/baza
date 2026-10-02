@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>БАЗА — клуб киберспорта</title>
+
+<meta name="theme-color" content="#000000">
+<meta name="description" content="База — компьютерный клуб в Снежинске. Бронирование мест онлайн.">
+
+<!-- официальный скрипт Telegram: без него приложение работает как обычная страница -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;800&family=Onest:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- тот же слой данных, что у сайта и админки -->
+<script src="../store.js"></script>
+
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="tg.css">
+</head>
+
+<body>
+<div class="top">
+  <span class="top__mark"><img src="../assets/logo.png" alt="" width="44" height="44"></span>
+  <span>
+    <span class="top__name">БАЗА</span><br>
+    <span class="top__sub">клуб киберспорта</span>
+  </span>
+  <span class="top__who" id="who" hidden>
+    <span id="whoName"></span>
+    <img class="top__avatar" id="whoAvatar" alt="" width="32" height="32">
+  </span>
+</div>
+
+<main class="shell" id="shell">
+
+  <!-- ============================ шапка ============================ -->
+  <section class="hero">
+    <span class="hero__k"><i class="hero__dot" id="openDot"></i><span id="openText">…</span></span>
+    <h1>База<br>киберспорта</h1>
+    <p class="hero__lead" id="lead">Игровые места в Снежинске. Выбирай слот, бронируй, приходи.</p>
+    <div class="hero__meta">
+      <span class="chip chip--acc" id="mHours">часы</span>
+      <span class="chip" id="mCity">Снежинск</span>
+      <span class="chip" id="mPay">наличные</span>
+    </div>
+  </section>
+
+  <!-- ============================ тарифы ============================ -->
+  <section class="sec" id="tariffs">
+    <div class="sec__head"><h2>Тарифы</h2><span class="badge">цены за слот</span></div>
+    <div class="cards" id="tCards"></div>
+  </section>
+
+  <!-- ============================ бронирование ============================ -->
+  <section class="sec" id="book">
+    <div class="sec__head">
+      <h2>Забронировать</h2>
+      <span class="badge" id="freeBadge">—</span>
+    </div>
+
+    <div class="label" style="margin-bottom:var(--s2)">Дата</div>
+    <div class="dates" id="dates" role="group" aria-label="Выбор даты"></div>
+
+    <div class="label" style="margin:var(--s5) 0 var(--s2)">Слот</div>
+    <div class="slots" id="slots" role="group" aria-label="Выбор слота"></div>
+
+    <div class="zone" style="margin-top:var(--s5)">
+      <div class="zone__head">
+        <h3>Схема зала</h3>
+        <span class="zone__cnt" id="zoneCount">—</span>
+      </div>
+      <div id="seatMap"></div>
+    </div>
+
+    <div class="sum" id="summary" hidden>
+      <div class="sum__row"><span>Место</span><b id="sSeat">—</b></div>
+      <div class="sum__row"><span>Когда</span><b id="sWhen">—</b></div>
+      <div class="sum__row"><span>Тариф</span><b id="sTariff">—</b></div>
+      <div class="sum__tot"><span>Итого</span><b id="sTotal">0 ₽</b></div>
+      <div class="btns">
+        <button class="btn" type="button" id="bookBtn">Забронировать</button>
+        <button class="btn btn--ghost" type="button" id="resetBtn" hidden>Сбросить</button>
+      </div>
+    </div>
+
+    <p class="notice" id="closedNotice" hidden></p>
+  </section>
+
+  <!-- ============================ контакты ============================ -->
+  <section class="sec" id="contacts">
+    <div class="sec__head"><h2>Как нас найти</h2></div>
+    <div class="contacts">
+      <div class="crow"><span>Адрес</span><b id="cAddr">—</b></div>
+      <div class="crow"><span>Город</span><b id="cCity">—</b></div>
+      <div class="crow"><span>Часы</span><b id="cHours">—</b></div>
+      <div class="crow"><span>Оплата</span><b id="cPay">—</b></div>
+      <div class="crow" id="cPhoneRow" hidden><span>Телефон</span><b id="cPhone">—</b></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p id="footName">БАЗА — клуб киберспорта</p>
+    <p class="foot__note" id="footNote"></p>
+  </footer>
+</main>
+
+<p class="mb-hint" id="mbHint">Нажми «Забронировать» внизу экрана</p>
+
+<!-- ============================ диалог подтверждения ============================ -->
+<dialog class="dlg" id="bookDlg" aria-labelledby="bookTitle">
+  <form class="dlg__in" id="bookForm" novalidate>
+    <div class="dlg__head">
+      <div>
+        <span class="label">Бронирование</span>
+        <h3 id="bookTitle">Подтвердить бронь</h3>
+      </div>
+      <button class="icon-btn" type="button" id="bookClose" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="notice notice--ok" id="dlgSummary"></div>
+
+    <div class="field">
+      <label class="label" for="bkName">Имя</label>
+      <input class="inp" id="bkName" name="name" type="text" autocomplete="name"
+             maxlength="60" placeholder="Как к тебе обращаться" required>
+    </div>
+    <div class="field">
+      <label class="label" for="bkPhone">Телефон</label>
+      <input class="inp" id="bkPhone" name="phone" type="tel" autocomplete="tel"
+             maxlength="24" placeholder="+7 900 000-00-00" required>
+    </div>
+
+    <p class="notice notice--err" id="bkMsg" hidden></p>
+
+    <div class="sum__tot" style="padding-top:0;border:0">
+      <span>Итого</span><b id="dlgTotal">0 ₽</b>
+    </div>
+
+    <div class="btns">
+      <button class="btn" type="submit" id="bookConfirm">Забронировать</button>
+      <button class="btn btn--ghost" type="button" id="bookCancel">Отмена</button>
+    </div>
+
+    <p class="foot__note">Оплата на месте. Бронь без подтверждения администратором
+      не гарантирует место.</p>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>БАЗА — компьютерный клуб · Снежинск</title>
+<meta name="description" content="БАЗА — клуб киберспорта в Снежинске. Бронирование PC и PS5, тарифы Общий зал, VIP и PlayStation 5. Ул. Ленина, 19. Ежедневно 12:00–02:00.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;800&family=Onest:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+
+<style>
+/* Токены — в tokens.css (общий файл с админ-панелью). Здесь только вёрстка. */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--fg-2);
+  font:400 16px/1.55 var(--f-body);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* faint CRT grid — the one piece of decoration */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    linear-gradient(rgba(0,255,102,.028) 1px,transparent 1px) 0 0/100% 44px,
+    linear-gradient(90deg,rgba(0,255,102,.028) 1px,transparent 1px) 0 0/44px 100%;
+  mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 78%);
+}
+img{max-width:100%;display:block}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+.shell{width:min(100% - 2rem,var(--shell));margin-inline:auto;position:relative;z-index:1}
+@media (max-width:640px){.shell{width:min(100% - 1.5rem,var(--shell))}}
+
+.skip{
+  position:absolute;left:-999px;top:0;z-index:100;
+  background:var(--acc);color:var(--on-acc);padding:var(--s3) var(--s4);font-weight:600;
+}
+.skip:focus{left:var(--s4);top:var(--s4)}
+
+/* ============================ type ============================ */
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-spacing:-.02em;color:var(--fg)}
+.h-xl{font-size:clamp(2.6rem,11vw,7rem);font-weight:800;text-transform:uppercase}
+.h-lg{font-size:clamp(1.7rem,5.2vw,3rem);text-transform:uppercase}
+.h-md{font-size:clamp(1.15rem,2.6vw,1.6rem)}
+.lead{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--fg-3);max-width:60ch;font-weight:300}
+
+.label{
+  font:600 11px/1 var(--f-mono);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--fg-muted);
+}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ============================ nav ============================ */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav__in{display:flex;align-items:center;gap:var(--s4);height:72px}
+.brand{display:flex;align-items:center;gap:var(--s3);min-width:0}
+.brand__mark{
+  width:var(--tap);height:var(--tap);flex:none;border-radius:var(--r);
+  background:var(--surface-2);border:1px solid var(--line-strong);
+  display:grid;place-items:center;overflow:hidden;
+}
+.brand__mark img{width:100%;height:100%;object-fit:cover}
+.brand__txt{min-width:0}
+.brand__name{font:800 17px/1 var(--f-display);letter-spacing:.02em;color:var(--fg)}
+.brand__sub{font:500 10px/1.5 var(--f-mono);letter-spacing:.16em;color:var(--fg-muted);text-transform:uppercase;margin-top:4px}
+.nav__links{display:flex;gap:var(--s2);margin-left:auto}
+@media (max-width:880px){.nav__links{display:none}}
+.nav__link{
+  display:flex;align-items:center;min-height:var(--tap);padding:0 14px;
+  border-radius:var(--r);font-size:14px;font-weight:500;
+  color:var(--fg-3);transition:background .18s var(--ease),color .18s var(--ease);
+}
+.nav__link:hover{background:var(--surface-2);color:var(--fg)}
+.nav__link:focus-visible{background:var(--surface-2);color:var(--fg)}
+
+/* ============================ status pill ============================ */
+.pill{
+  display:inline-flex;align-items:center;gap:var(--s2);
+  padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line-strong);background:var(--bg-elev);
+  font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--fg-3);white-space:nowrap;
+}
+.pill--open{border-color:var(--acc-dim);color:var(--acc-dim);background:rgba(0,255,102,.07)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.pill--open .dot{animation:pulse 2.4s var(--ease) infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--acc-glow)}50%{opacity:.55;box-shadow:0 0 0 6px rgba(0,255,102,0)}}
+
+/* ============================ buttons ============================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+  min-height:var(--tap);padding:0 var(--s5);
+  border-radius:var(--r);font:600 15px/1 var(--f-body);font-weight:600;
+  transition:transform .18s var(--ease),background .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease);
+  border:1px solid transparent;
+}
+.btn svg{width:18px;height:18px;flex:none}
+.btn--primary{background:var(--acc);color:var(--on-acc);font-weight:700}
+.btn--primary:hover{background:#3DFF7A;transform:translateY(-2px);box-shadow:0 8px 28px var(--acc-glow)}
+.btn--primary:active{transform:translateY(0)}
+.btn--ghost{border-color:var(--line-strong);color:var(--fg-2);background:var(--bg-elev)}
+.btn--ghost:hover{border-color:var(--acc-dim);color:var(--acc-dim);background:rgba(0,255,102,.05)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ============================ hero ============================ */
+.hero{position:relative;padding:var(--s8) 0 var(--s7);overflow:hidden}
+.hero__bg{
+  position:absolute;inset:-20% -10% auto;height:120%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(46% 40% at 76% 22%,rgba(0,255,102,.15),transparent 70%),
+    radial-gradient(40% 36% at 12% 78%,rgba(0,255,102,.07),transparent 70%);
+}
+.hero__in{position:relative;z-index:1;display:grid;gap:var(--s6);grid-template-columns:1fr;align-items:end}
+/* grid items default to min-width:auto — long display words would otherwise
+   blow the column out past the viewport (Unbounded 60px "киберспорта" = 560px) */
+.hero__in > *{min-width:0}
+@media (min-width:1000px){.hero__in{grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr)}}
+
+.hero__eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-bottom:var(--s5)}
+.hero__title{
+  font-size:clamp(3.4rem,17vw,11rem);
+  font-weight:800;text-transform:uppercase;letter-spacing:-.035em;line-height:.88;
+  color:var(--fg);
+  text-shadow:0 0 60px rgba(0,255,102,.22);
+  hyphens:manual;overflow-wrap:normal;
+}
+.hero__title em{
+  font-style:normal;color:var(--acc);
+  text-shadow:0 0 44px var(--acc-glow);
+}
+/* «БАЗА» — одно слово крупно, киберспорт уходит в подпись под ним */
+.hero__title-sub{
+  display:block;margin-top:var(--s4);
+  font:500 clamp(.95rem,3.1vw,1.4rem)/1.2 var(--f-body);
+  letter-spacing:.3em;text-transform:uppercase;color:var(--fg-3);
+}
+.hero__lead{margin-top:var(--s5);max-width:52ch}
+.hero__cta{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
+.hero__meta{
+  display:grid;gap:var(--s3);padding:var(--s5);
+  border:1px solid var(--line);border-radius:var(--r);
+  background:linear-gradient(180deg,var(--bg-elev),rgba(10,12,9,.35));
+}
+.hero__meta .row{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
+.hero__meta .row:last-child{padding-bottom:0;border-bottom:0}
+.hero__meta dt{color:var(--fg-muted);font:600 11px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase}
+.hero__meta dd{color:var(--fg);font-weight:600;text-align:right}
+
+/* ============================ section ============================ */
+.sec{padding:var(--s8) 0}
+.sec--alt{background:linear-gradient(180deg,transparent,rgba(10,12,9,.55),transparent)}
+.sec__head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s4);margin-bottom:var(--s6)}
+.sec__head .label{margin-bottom:var(--s3);display:block}
+.sec__head p{max-width:52ch;color:var(--fg-3);font-weight:300}
+
+/* ============================ tariff cards ============================ */
+.grid-cards{display:grid;gap:var(--s4);grid-template-columns:1fr}
+@media (min-width:640px){.grid-cards{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1080px){.grid-cards{grid-template-columns:repeat(4,1fr)}}
+
+.card{
+  display:flex;flex-direction:column;
+  border:1px solid var(--line);border-radius:var(--r);
+  background:var(--bg-elev);
+  transition:border-color .22s var(--ease),transform .22s var(--ease),background .22s var(--ease);
+}
+.card:hover{border-color:var(--line-strong);transform:translateY(-3px);background:var(--surface)}
+.card--flag{border-color:var(--acc-dim);background:linear-gradient(180deg,rgba(0,255,102,.07),var(--bg-elev) 55%)}
+.card__tag{
+  display:inline-flex;align-self:flex-start;align-items:center;gap:6px;
+  padding:6px 10px;border-radius:var(--r);
+  background:var(--acc);color:var(--on-acc);
+  font:700 10px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;
+}
+.card__tag--ghost{background:transparent;color:var(--fg-muted);border:1px solid var(--line-strong)}
+.card__body{padding:var(--s5);display:flex;flex-direction:column;gap:var(--s4);flex:1}
+.card__name{font:700 1.28rem/1.1 var(--f-display);color:var(--fg);text-transform:uppercase;letter-spacing:-.01em}
+.card__desc{color:var(--fg-3);font-size:14.5px;font-weight:300}
+.card__price{display:flex;align-items:baseline;gap:6px;padding:var(--s3) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.card__price b{font:700 1.5rem/1 var(--f-mono);color:var(--acc-dim);font-variant-numeric:tabular-nums}
+.card__price span{font-size:12.5px;color:var(--fg-muted)}
+
+.spec{display:grid;gap:var(--s2)}
+.spec__row{display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center;font-size:13.5px}
+.spec__row svg{width:15px;height:15px;color:var(--acc-dim);flex:none}
+.spec__row span{color:var(--fg-muted);white-space:nowrap}
+.spec__row b{color:var(--fg-2);font-weight:500;text-align:right;overflow-wrap:anywhere}
+
+.tariff-note{margin-top:var(--s5);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);color:var(--fg-muted);font-size:14px}
+
+/* ============================ slot picker ============================ */
+.slots{display:flex;flex-wrap:wrap;gap:var(--s3);margin-bottom:var(--s6)}
+.slot{
+  min-height:var(--tap);padding:12px var(--s4);
+  display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  border:1px solid var(--line-strong);border-radius:var(--r);
+  background:var(--bg-elev);
+  transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease);
+}
+.slot:hover{border-color:var(--acc-dim)}
+.slot b{font:600 14px/1 var(--f-body);color:var(--fg-2)}
+.slot small{font:500 11px/1 var(--f-mono);color:var(--fg-muted);letter-spacing:.06em}
+.slot[aria-pressed="true"]{
+  background:var(--acc);border-color:var(--acc);color:var(--on-acc);
+}
+.slot[aria-pressed="true"] b,.slot[aria-pressed="true"] small{color:var(--on-acc)}
+
+/* ============================ seat map ============================ */
+.map{
+  border:1px solid var(--line);border-radius:var(--r);
+  background:linear-gradient(180deg,var(--bg-elev),rgba(0,0,0,.2));
+  padding:var(--s5);margin-bottom:var(--s5);
+}
+.zone + .zone{margin-top:var(--s6);padding-top:var(--s6);border-top:1px dashed var(--line-strong)}
+.zone__head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
+.zone__name{font:700 15px/1 var(--f-display);color:var(--fg);text-transform:uppercase;letter-spacing:.04em}
+.chip{
+  padding:5px 9px;border-radius:var(--r);border:1px solid var(--line-strong);
+  font:600 10px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted);
+}
+.chip--acc{border-color:var(--acc-dim);color:var(--acc-dim)}
+
+.seats{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(74px,1fr))}
+.seat{
+  position:relative;min-height:74px;padding:8px 6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:1px solid var(--line-strong);border-radius:var(--r);
+  background:var(--surface);
+  font:600 12px/1 var(--f-mono);color:var(--fg-2);
+  transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease),transform .18s var(--ease);
+}
+.seat__id{font-size:12.5px;letter-spacing:.02em}
+.seat__p{font-size:10.5px;color:var(--fg-muted);font-variant-numeric:tabular-nums}
+.seat__type{position:absolute;top:4px;right:6px;font:700 8.5px/1 var(--f-mono);color:var(--fg-muted);letter-spacing:.08em}
+.seat--free:hover{border-color:var(--acc-dim);background:rgba(0,255,102,.09);color:var(--fg);transform:translateY(-2px)}
+.seat--free:hover .seat__p{color:var(--acc-dim)}
+.seat--taken{
+  background:repeating-linear-gradient(45deg,var(--surface-2),var(--surface-2) 5px,var(--surface) 5px,var(--surface) 10px);
+  border-style:dashed;color:var(--busy);cursor:not-allowed;
+}
+.seat--taken .seat__p{color:var(--busy);opacity:.7}
+.seat--taken::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 48%,var(--busy) 48%,var(--busy) 52%,transparent 52%);
+  opacity:.35;pointer-events:none;
+}
+.seat--sel{
+  background:var(--acc);border-color:var(--acc);color:var(--on-acc);
+  box-shadow:0 0 0 3px rgba(0,255,102,.22);
+}
+.seat--sel .seat__p,.seat--sel .seat__type{color:rgba(0,0,0,.66)}
+.seat--sel:hover{transform:none}
+
+.legend{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line)}
+.legend__i{display:flex;align-items:center;gap:var(--s2);font-size:12.5px;color:var(--fg-muted)}
+.legend__sw{width:16px;height:16px;border-radius:3px;border:1px solid var(--line-strong);flex:none}
+.sw-free{background:var(--surface)}
+.sw-taken{background:repeating-linear-gradient(45deg,var(--surface-2),var(--surface-2) 3px,var(--surface) 3px,var(--surface) 6px)}
+.sw-sel{background:var(--acc);border-color:var(--acc)}
+
+/* ============================ summary ============================ */
+.summary{
+  position:sticky;bottom:0;z-index:40;margin-top:var(--s5);
+  border:1px solid var(--acc-dim);border-radius:var(--r);
+  background:rgba(10,12,9,.94);backdrop-filter:blur(16px);
+  padding:var(--s4) var(--s5);
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);
+}
+@media (min-width:760px){.summary{padding:var(--s5) var(--s5)}}
+.summary__info{display:flex;flex-wrap:wrap;gap:var(--s5);flex:1;min-width:220px}
+.summary__item b{display:block;font:700 12px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:6px}
+.summary__item span{font:600 16px/1.2 var(--f-body);color:var(--fg)}
+.summary__total{display:flex;align-items:baseline;gap:var(--s2);margin-left:auto}
+.summary__total b{font:800 1.7rem/1 var(--f-mono);color:var(--acc-dim);font-variant-numeric:tabular-nums}
+.summary__total span{font-size:12.5px;color:var(--fg-muted)}
+.empty{color:var(--fg-muted);font-size:14.5px;font-weight:300}
+
+/* ============================ footer ============================ */
+.foot{border-top:1px solid var(--line);margin-top:var(--s8);padding:var(--s7) 0 var(--s6);background:var(--bg-elev)}
+.foot__grid{display:grid;gap:var(--s6);grid-template-columns:1fr}
+@media (min-width:760px){.foot__grid{grid-template-columns:1.4fr 1fr 1fr}}
+.foot__brand{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
+.foot h3{font:700 12px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:var(--s4)}
+.foot ul{list-style:none;display:grid;gap:var(--s1)}
+.foot a{
+  display:flex;align-items:center;min-height:var(--tap);padding-inline:2px;
+  color:var(--fg-3);transition:color .18s var(--ease);
+}
+.foot a:hover{color:var(--acc-dim)}
+.foot__note{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--line);font-size:12.5px;color:var(--fg-muted);font-weight:300}
+
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ============================ date strip ============================ */
+.dates{display:flex;gap:var(--s2);overflow-x:auto;padding-bottom:var(--s2);margin-bottom:var(--s3);scrollbar-width:thin}
+.date{
+  flex:none;min-height:var(--tap);min-width:var(--tap);padding:7px 12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:1px solid var(--line-strong);border-radius:var(--r);background:var(--bg-elev);
+  transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease);
+}
+.date:hover{border-color:var(--acc-dim)}
+.date b{font:600 13px/1 var(--f-body);color:var(--fg-2);white-space:nowrap}
+.date small{font:500 10px/1 var(--f-mono);color:var(--fg-muted);letter-spacing:.06em}
+.date[aria-pressed="true"]{background:var(--acc);border-color:var(--acc)}
+.date[aria-pressed="true"] b,.date[aria-pressed="true"] small{color:var(--on-acc)}
+.date:disabled{cursor:not-allowed;opacity:.45}
+.date:disabled:hover{border-color:var(--line-strong)}
+
+/* ============================ booking dialog ============================ */
+.dlg{
+  border:1px solid var(--acc-dim);border-radius:var(--r);
+  background:var(--bg-elev);color:var(--fg-2);padding:0;
+  width:min(100% - 2rem,520px);
+}
+.dlg::backdrop{background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
+.dlg__in{padding:var(--s5);display:grid;gap:var(--s4)}
+.dlg h3{font:700 1.25rem/1.15 var(--f-display);text-transform:uppercase}
+.field{display:grid;gap:6px}
+.field label{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-muted)}
+.field input{
+  min-height:var(--tap);padding:0 var(--s3);border-radius:var(--r);
+  border:1px solid var(--line-strong);background:var(--bg);color:var(--fg);
+}
+.field input::placeholder{color:var(--fg-muted)}
+.dlg__tot{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--s3);border-top:1px solid var(--line)}
+.dlg__tot b{font:800 1.5rem/1 var(--f-mono);color:var(--acc-dim);font-variant-numeric:tabular-nums}
+.dlg__acts{display:flex;gap:var(--s3);flex-wrap:wrap}
+.notice{padding:var(--s3) var(--s4);border-radius:var(--r);border:1px solid var(--line-strong);font-size:13.5px;color:var(--fg-3);line-height:1.5}
+.notice--ok{border-color:var(--acc-dim);color:var(--acc-dim);background:rgba(0,255,102,.06)}
+.notice--err{border-color:var(--danger);color:var(--danger);background:rgba(255,77,77,.07)}
+.slot:disabled{cursor:not-allowed;opacity:.45}
+.slot:disabled:hover{border-color:var(--line-strong)}
+
+/* ============================ toast ============================ */
+.toast{
+  position:fixed;left:50%;bottom:var(--s5);transform:translate(-50%,140%);
+  z-index:80;width:max-content;max-width:min(100% - 2rem,560px);
+  padding:var(--s3) var(--s5);border-radius:var(--r);
+  border:1px solid var(--acc-dim);background:rgba(10,12,9,.97);color:var(--acc-dim);
+  font:600 14px/1.45 var(--f-body);text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.65);
+  transition:transform .28s var(--ease);
+}
+.toast--in{transform:translate(-50%,0)}
+</style>
+</head>
+
+<body>
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<header class="nav">
+  <div class="shell nav__in">
+    <a class="brand" href="#top">
+      <span class="brand__mark"><img src="assets/logo.png" alt="" width="44" height="44"></span>
+      <span class="brand__txt">
+        <span class="brand__name">БАЗА</span>
+        <span class="brand__sub">клуб киберспорта</span>
+      </span>
+    </a>
+    <nav class="nav__links" aria-label="Основная навигация">
+      <a class="nav__link" href="#tariffs">Тарифы</a>
+      <a class="nav__link" href="#map">Места</a>
+      <a class="nav__link" href="#contacts">Контакты</a>
+    </nav>
+    <span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">Уточняем…</span></span>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="shell hero__in">
+      <div>
+        <div class="hero__eyebrow">
+          <span class="pill pill--open" id="pillHero"><span class="dot"></span><span id="pillHeroText">Открыто</span></span>
+          <span class="label">Снежинск · ул. Ленина, 19</span>
+        </div>
+        <h1 class="hero__title">База<span class="hero__title-sub">клуб <em>кибер</em>спорта</span></h1>
+        <p class="lead hero__lead">
+          RTX 5060 и 5060&nbsp;Ti, мониторы до 280&nbsp;Гц, PS5 и кресла, в которых
+          хочется остаться. Смотри свободные места — бронируй онлайн.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary" id="heroBook"
+             href="https://langame.ru/799459198_computerniy_club_baza_snezhinsk/booking"
+             target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+            Забронировать
+          </a>
+          <a class="btn btn--ghost" href="#map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+            Смотреть места
+          </a>
+        </div>
+      </div>
+
+      <dl class="hero__meta">
+        <div class="row"><dt>Режим</dt><dd id="metaHours">12:00 — 02:00</dd></div>
+        <div class="row"><dt>Сегодня</dt><dd id="metaToday">—</dd></div>
+        <div class="row"><dt>Оплата</dt><dd id="metaPay">Наличные / QR</dd></div>
+        <div class="row"><dt>Рейтинг</dt><dd id="metaRating">4.0 · 2ГИС</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ================= TARIFFS ================= -->
+  <section class="sec sec--alt" id="tariffs">
+    <div class="shell">
+      <div class="sec__head">
+        <div>
+          <span class="label">01 — Тарифы</span>
+          <h2 class="h-lg">Что стоит<br>за каждым местом</h2>
+        </div>
+        <p>Три зоны: общий зал на RTX&nbsp;5060, VIP на 5060&nbsp;Ti и отдельная зона PS5.</p>
+      </div>
+      <div class="grid-cards" id="tariffGrid"></div>
+      <p class="tariff-note">
+        Цены и бронь живут в Langame — там все слоты и тарифы.
+        <a class="btn btn--ghost" href="https://langame.ru/799459198_computerniy_club_baza_snezhinsk/booking" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+          Открыть тарифы и забронировать
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= MAP ================= -->
+  <section class="sec" id="map">
+    <div class="shell">
+      <div class="sec__head">
+        <div>
+          <span class="label">02 — Зал</span>
+          <h2 class="h-lg">Схема зала<br>и бронь</h2>
+        </div>
+        <p>Общий зал и VIP, PS5 — отдельно. Живая занятость, выбор времени и оплата — в брони Langame.</p>
+      </div>
+
+      <div class="dates" role="group" aria-label="Дата брони" id="dateGroup"></div>
+      <div class="slots" role="group" aria-label="Временной слот" id="slotGroup"></div>
+
+      <div class="map" id="seatMap" aria-live="polite"></div>
+
+      <div class="legend" aria-hidden="true">
+        <span class="legend__i"><span class="legend__sw sw-free"></span>Свободно</span>
+        <span class="legend__i"><span class="legend__sw sw-sel"></span>Выбрано</span>
+        <span class="legend__i"><span class="legend__sw sw-taken"></span>Занято</span>
+      </div>
+
+      <div class="summary" id="summary"></div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACTS ================= -->
+  <section class="sec sec--alt" id="contacts">
+    <div class="shell">
+      <div class="sec__head">
+        <div>
+          <span class="label">03 — Контакты</span>
+          <h2 class="h-lg">Приезжай</h2>
+        </div>
+      </div>
+      <dl class="hero__meta" style="max-width:560px">
+        <div class="row"><dt>Адрес</dt><dd id="cAddress">ул. Ленина, 19</dd></div>
+        <div class="row"><dt>Город</dt><dd id="cCity">Снежинск, Челябинская обл.</dd></div>
+        <div class="row"><dt>Часы</dt><dd id="cHours">Ежедневно 12:00 — 02:00</dd></div>
+        <div class="row"><dt>Оплата</dt><dd id="cPay">Наличные · карты · СБП</dd></div>
+        <div class="row"><dt>Телефон</dt><dd id="cPhone">+7 993 930-55-56</dd></div>
+        <div class="row"><dt>Почта</dt><dd id="cEmail">baza_snz@mail.ru</dd></div>
+      </dl>
+      <p class="foot__note" style="border:0;padding:0;margin:var(--s5) 0 0;max-width:560px">
+        Бронь оформляется онлайн в Langame или на месте по телефону. Схема на сайте —
+        демонстрационная, реальная занятость видна при бронировании.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="foot__grid">
+      <div>
+        <div class="foot__brand">
+          <span class="brand__mark"><img src="assets/logo.png" alt="" width="44" height="44"></span>
+          <span class="brand__txt">
+            <span class="brand__name">БАЗА</span>
+            <span class="brand__sub">клуб киберспорта</span>
+          </span>
+        </div>
+        <p class="foot__note" style="border:0;padding:0;margin:0">
+          Компьютерный клуб в Снежинске. Бронирование PC и PS5 круглосуточно в период работы.
+        </p>
+      </div>
+      <div>
+        <h3>Навигация</h3>
+        <ul>
+          <li><a href="#tariffs">Тарифы</a></li>
+          <li><a href="#map">Схема мест</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Клуб</h3>
+        <ul>
+          <li><a href="https://2gis.ru/snezhinsk/firm/70000001110677236" target="_blank" rel="noopener">Открыть в 2ГИС</a></li>
+          <li><a href="admin.html">Админ-панель</a></li>
+          <li><a href="#top">Наверх</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="store.js"></script>
+<script>
+/* ================================================================
+   Публичный сайт «БАЗА».
+
+   Клубные данные (тарифы, места, расписание, брони) берутся из
+   общего слоя BAZA — того же файла store.js, что использует
+   админ-панель. Правки в панели появляются здесь сразу, без
+   перезагрузки страницы.
+   ================================================================ */
+
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ---------- состояние экрана (не клубные данные) ---------- */
+let day  = BAZA.dateKey();
+let slot = 'night';
+const picked = new Set();
+const BOOK_FALLBACK = 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk/booking';
+
+/* ---------- доступ к данным ---------- */
+const data      = () => BAZA.get();
+const slotDef   = id => data().slots.find(s => s.id === id) || data().slots[0];
+const tariffDef = id => data().tariffs[id];
+const priceNum  = (t, s) => tariffDef(t).price[s] || 0;
+const money     = n => n.toLocaleString('ru-RU') + ' ₽';
+const priceText = (t, s) => tariffDef(t).hourly
+  ? money(priceNum(t, s)) + '/ч'
+  : money(priceNum(t, s));
+
+const esc = s => String(s).replace(/[&<>"']/g,
+  c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- иконки (inline SVG, без эмодзи) ---------- */
+const ICON = {
+  cpu:'<path d="M4 4h16v16H4z"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
+  gpu:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/>',
+  mon:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  mou:'<path d="M3 3v18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-7-7H5a2 2 0 0 0-2 2z"/><path d="M12 2v5h7"/>',
+  key:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/>',
+  hp:'<path d="M3 14h18"/><path d="M4 14v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"/><rect x="1" y="9" width="22" height="5" rx="2.5"/>',
+  chair:'<path d="M6 10V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4"/><path d="M4 10h16v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M7 18v3M17 18v3"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><path d="M17 4.5a3.5 3.5 0 0 1 0 7"/>',
+  play:'<path d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M11 9l4 3-4 3z"/>',
+  box:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10v10H7z"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+};
+const svg = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+
+/* иконка подбирается по смыслу строки характеристики, а не по порядку */
+function specIcon(label){
+  const l = label.toLowerCase();
+  if (l.includes('процессор')) return ICON.cpu;
+  if (l.includes('видеокарт')) return ICON.gpu;
+  if (l.includes('монитор') || l.includes('проектор')) return ICON.mon;
+  if (l.includes('мышь')) return ICON.mou;
+  if (l.includes('клавиат')) return ICON.key;
+  if (l.includes('наушник')) return ICON.hp;
+  if (l.includes('кресл')) return ICON.chair;
+  if (l.includes('формат') || l.includes('человек')) return ICON.users;
+  if (l.includes('консол') || l.includes('перифер') || l.includes('playstation')) return ICON.play;
+  return ICON.box;
+}
+
+/* ============================== ДАТЫ ============================== */
+function dayOptions(){
+  const out = [];
+  for (let i = 0; i < 7; i++){
+    const d   = BAZA.addDays(new Date(), i);
+    const key = BAZA.dateKey(d);
+    const h   = BAZA.hoursFor(key);
+    out.push({
+      key: key, hours: h, open: !!h,
+      label: i === 0 ? 'Сегодня' : i === 1 ? 'Завтра'
+           : d.toLocaleDateString('ru-RU', { weekday: 'short' }),
+      sub: d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
+    });
+  }
+  return out;
+}
+
+function renderDates(){
+  const opts = dayOptions();
+  /* если выбранный день закрыт или выпал из окна — уходим на первый рабочий */
+  if (!opts.some(o => o.key === day && o.open)){
+    const first = opts.find(o => o.open);
+    if (first) day = first.key;
+  }
+  $('#dateGroup').innerHTML = opts.map(o => `
+    <button class="date" type="button" data-day="${o.key}"
+            aria-pressed="${o.key === day}"${o.open ? '' : ' disabled'}>
+      <b>${esc(o.label)}</b>
+      <small>${o.sub}${o.open ? '' : ' · вых'}</small>
+    </button>`).join('');
+
+  $$('#dateGroup .date').forEach(b => b.addEventListener('click', () => {
+    if (b.disabled) return;
+    day = b.dataset.day; picked.clear();
+    renderDates(); renderMap(); renderSummary();
+  }));
+}
+
+/* ============================== ТАРИФЫ ============================== */
+function renderTariffs(){
+  $('#tariffGrid').innerHTML = Object.entries(data().tariffs).map(([key, t]) => `
+    <article class="card${t.featured ? ' card--flag' : ''}">
+      <div class="card__body">
+        <span class="card__tag${t.featured ? '' : ' card__tag--ghost'}">${esc(t.badge)}</span>
+        <h3 class="card__name">${esc(t.name)}</h3>
+        <p class="card__desc">${esc(t.desc)}</p>
+        <div class="card__price">
+          <b>от 170 ₽/час</b>
+          <span>тарифы и бронь — в Langame</span>
+        </div>
+        <div class="spec">
+          ${t.specs.map(row => `
+            <div class="spec__row">
+              ${svg(specIcon(row[0]))}
+              <span>${esc(row[0])}</span><b>${esc(row[1])}</b>
+            </div>`).join('')}
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+/* ============================== СЛОТЫ ============================== */
+function renderSlots(){
+  const open = !!BAZA.hoursFor(day);
+  $('#slotGroup').innerHTML = data().slots.map(s => `
+    <button class="slot" type="button" data-slot="${s.id}"
+            aria-pressed="${s.id === slot}"${open ? '' : ' disabled'}>
+      <b>${esc(s.label)}</b><small>${esc(s.time)}</small>
+    </button>`).join('');
+
+  $$('#slotGroup .slot').forEach(b => b.addEventListener('click', () => {
+    if (b.disabled) return;
+    slot = b.dataset.slot; picked.clear();
+    renderSlots(); renderTariffs(); renderMap(); renderSummary();
+  }));
+}
+
+/* ============================== КАРТА МЕСТ ============================== */
+function renderMap(){
+  if (!BAZA.hoursFor(day)){
+    $('#seatMap').innerHTML = '<p class="empty">В этот день клуб не работает.</p>';
+    return;
+  }
+  $('#seatMap').innerHTML = data().zones.map(z => {
+    const t = tariffDef(z.tariff);
+    const rows = z.seats.map(id => {
+      const st  = BAZA.isSeatBusy(day, slot, z.id, id);
+      const sel = picked.has(id);
+      const cls = st.busy ? 'seat--taken' : sel ? 'seat--sel' : 'seat--free';
+      const type = z.tariff === 'ps' ? 'PS' : 'PC';
+      const state = st.busy
+        ? (st.kind === 'block' ? 'Недоступно' : 'Занято')
+        : sel ? 'Выбрано' : 'Свободно';
+      return `<button class="seat ${cls}" type="button" data-seat="${esc(id)}"
+        aria-pressed="${sel}"${st.busy ? ' aria-disabled="true"' : ''}>
+        <span class="seat__type">${type}</span>
+        <span class="seat__id">${esc(id)}</span>
+        <span class="seat__p">${priceText(z.tariff, slot)}</span>
+        <span class="sr">${esc(z.name)}, тариф ${esc(t.name)}, ${priceText(z.tariff, slot)}. ${state}</span>
+      </button>`;
+    }).join('');
+    return `<div class="zone">
+      <div class="zone__head">
+        <h3 class="zone__name">${esc(z.name)}</h3>
+        <span class="chip chip--acc">${esc(t.name)}</span>
+        <span class="chip">${esc(z.note)}</span>
+      </div>
+      <div class="seats">${rows}</div>
+    </div>`;
+  }).join('');
+
+  $$('#seatMap .seat').forEach(b => b.addEventListener('click', () => {
+    if (b.classList.contains('seat--taken')) return;
+    const id = b.dataset.seat;
+    picked.has(id) ? picked.delete(id) : picked.add(id);
+    renderMap(); renderSummary();
+  }));
+}
+
+/* ============================== ИТОГ ============================== */
+function pickedItems(){
+  const out = [];
+  picked.forEach(id => {
+    const z = data().zones.find(z => z.seats.includes(id));
+    if (!z) return;
+    out.push({
+      id: id, zoneId: z.id, zone: z.name, tariff: z.tariff,
+      name: tariffDef(z.tariff).name, num: priceNum(z.tariff, slot),
+    });
+  });
+  return out;
+}
+
+function dateLabel(){
+  return new Date(day + 'T12:00:00')
+    .toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+}
+
+function bookLink(){
+  const url = (data().club && data().club.bookingUrl) || BOOK_FALLBACK;
+  return `<a class="btn btn--primary" href="${esc(url)}" target="_blank" rel="noopener">
+      ${svg(ICON.link)}
+      Забронировать в Langame
+    </a>`;
+}
+
+function renderSummary(){
+  const box   = $('#summary');
+  const items = pickedItems();
+
+  if (!items.length){
+    box.innerHTML = `
+      <div class="summary__info">
+        <p class="empty">Нажми на свободный квадрат, чтобы прикинуть стоимость. Сама бронь и оплата — в Langame.</p>
+      </div>
+      ${bookLink()}`;
+    return;
+  }
+  const total  = items.reduce((a, b) => a + b.num, 0);
+  const hourly = items.some(i => tariffDef(i.tariff).hourly);
+
+  box.innerHTML = `
+    <div class="summary__info">
+      <div class="summary__item"><b>Дата</b><span>${esc(dateLabel())}</span></div>
+      <div class="summary__item"><b>Слот</b><span>${esc(slotDef(slot).time)}</span></div>
+      <div class="summary__item"><b>Мест</b><span>${items.length} · ${items.map(i => esc(i.id)).join(', ')}</span></div>
+      <div class="summary__item"><b>Тарифы</b><span>${[...new Set(items.map(i => i.name))].map(esc).join(', ')}</span></div>
+    </div>
+    <div class="summary__total">
+      <b>${money(total)}</b><span>${hourly ? 'в час' : 'за слот'}</span>
+    </div>
+    ${bookLink()}`;
+}
+
+/* Бронь и оплата — в системе клуба (Langame). Кнопки в шапке и в .summary
+   ведут туда; локально сайт только показывает схему и прикидку цены. */
+
+/* ============================== СТАТУС И ТЕКСТЫ ============================== */
+function renderStatus(){
+  const open = BAZA.isOpenAt();
+  const club = data().club;
+
+  $('#statusText').textContent = open
+    ? 'Открыто до ' + club.openTo
+    : 'Откроется в ' + club.openFrom;
+  $('#statusPill').classList.toggle('pill--open', open);
+  $('#pillHero').classList.toggle('pill--open', open);
+  $('#pillHeroText').textContent = open ? 'Открыто сейчас' : 'Закрыто сейчас';
+
+  $('#metaToday').textContent  = new Date().toLocaleDateString('ru-RU',
+    { weekday: 'long', day: 'numeric', month: 'long' });
+  $('#metaHours').textContent  = club.openFrom + ' — ' + club.openTo;
+  $('#metaPay').textContent    = club.payments;
+  $('#metaRating').textContent = club.rating;
+
+  const book = $('#heroBook');
+  if (book) book.href = club.bookingUrl || BOOK_FALLBACK;
+  $('#cAddress').textContent = club.address;
+  $('#cCity').textContent    = club.city + ', Челябинская обл.';
+  $('#cHours').textContent   = 'Ежедневно ' + club.openFrom + ' — ' + club.openTo;
+  $('#cPay').textContent     = club.payments;
+  $('#cPhone').textContent   = club.phone || 'Не указан';
+  $('#cEmail').textContent   = club.email || '—';
+}
+
+/* ============================== СТАРТ ============================== */
+function renderAll(){
+  renderDates(); renderSlots(); renderTariffs();
+  renderMap(); renderSummary(); renderStatus();
+}
+
+renderAll();
+BAZA.subscribe(renderAll);
+setInterval(renderStatus, 60000);
+</script>
+</body>
+</html>
