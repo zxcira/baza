@@ -91,7 +91,7 @@
 
         /* Куда ведёт кнопка «Забронировать». Бронь и оплата живут в
            системе клуба (Langame), сайт на неё только ведёт и не дублирует. */
-        bookingUrl: 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk/booking',
+        bookingUrl: 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk',
 
         /* Связь с Telegram-ботом. Пустые поля = демо-режим: приложение
            работает, но бронь никуда не уходит и живёт в этом устройстве.
