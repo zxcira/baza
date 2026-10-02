@@ -404,7 +404,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
              href="https://langame.ru/registration"
              target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
-            Забронировать
+            Забронировать онлайн
+          </a>
+          <a class="btn btn--ghost" id="heroCall" href="tel:+79939305556">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Позвонить
           </a>
           <a class="btn btn--ghost" href="#map">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
@@ -434,10 +438,14 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
       </div>
       <div class="grid-cards" id="tariffGrid"></div>
       <p class="tariff-note">
-        Цены и бронь живут в Langame — там все слоты и тарифы.
+        Цены и онлайн-бронь живут в Langame — там все слоты и тарифы.
         <a class="btn btn--ghost" href="https://langame.ru/registration" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
           Открыть тарифы и забронировать
+        </a>
+        <a class="btn btn--ghost" id="tariffCall" href="tel:+79939305556">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Позвонить
         </a>
       </p>
     </div>
@@ -483,7 +491,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
         <div class="row"><dt>Город</dt><dd id="cCity">Снежинск, Челябинская обл.</dd></div>
         <div class="row"><dt>Часы</dt><dd id="cHours">Ежедневно 12:00 — 02:00</dd></div>
         <div class="row"><dt>Оплата</dt><dd id="cPay">Наличные · карты · СБП</dd></div>
-        <div class="row"><dt>Телефон</dt><dd id="cPhone">+7 993 930-55-56</dd></div>
+        <div class="row"><dt>Телефон</dt><dd><a id="cPhone" href="tel:+79939305556">+7 993 930-55-56</a></dd></div>
         <div class="row"><dt>Почта</dt><dd id="cEmail">baza_snz@mail.ru</dd></div>
       </dl>
       <p class="foot__note" style="border:0;padding:0;margin:var(--s5) 0 0;max-width:560px">
@@ -551,6 +559,10 @@ const BOOK_FALLBACK = 'https://langame.ru/registration';
 
 /* ---------- доступ к данным ---------- */
 const data      = () => BAZA.get();
+const phoneHref = () => {
+  const digits = String((data().club && data().club.phone) || '').replace(/[^\d+]/g, '');
+  return digits ? 'tel:' + digits : '#contacts';
+};
 const slotDef   = id => data().slots.find(s => s.id === id) || data().slots[0];
 const tariffDef = id => data().tariffs[id];
 const priceNum  = (t, s) => tariffDef(t).price[s] || 0;
@@ -575,6 +587,7 @@ const ICON = {
   play:'<path d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M11 9l4 3-4 3z"/>',
   box:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10v10H7z"/>',
   link:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
 };
 const svg = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
 
@@ -735,7 +748,11 @@ function bookLink(){
   const url = (data().club && data().club.bookingUrl) || BOOK_FALLBACK;
   return `<a class="btn btn--primary" href="${esc(url)}" target="_blank" rel="noopener">
       ${svg(ICON.link)}
-      Забронировать в Langame
+      Забронировать онлайн
+    </a>
+    <a class="btn btn--ghost" href="${esc(phoneHref())}">
+      ${svg(ICON.phone)}
+      Позвонить
     </a>`;
 }
 
@@ -790,6 +807,12 @@ function renderStatus(){
 
   const book = $('#heroBook');
   if (book) book.href = club.bookingUrl || BOOK_FALLBACK;
+  const call = $('#heroCall');
+  if (call) call.href = phoneHref();
+  const tcall = $('#tariffCall');
+  if (tcall) tcall.href = phoneHref();
+  const cphone = $('#cPhone');
+  if (cphone) cphone.href = phoneHref();
   $('#cAddress').textContent = club.address;
   $('#cCity').textContent    = club.city + ', Челябинская обл.';
   $('#cHours').textContent   = 'Ежедневно ' + club.openFrom + ' — ' + club.openTo;
