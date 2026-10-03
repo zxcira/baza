@@ -689,14 +689,17 @@ function renderDates(){
 
 /* ============================== ТАРИФЫ ============================== */
 function renderTariffs(){
-  $('#tariffGrid').innerHTML = Object.entries(data().tariffs).map(([key, t]) => `
+  $('#tariffGrid').innerHTML = Object.entries(data().tariffs).map(([key, t]) => {
+    const nums = Object.values(t.price || {}).map(Number);
+    const from = nums.length ? Math.min.apply(null, nums) : 0;
+    return `
     <article class="card${t.featured ? ' card--flag' : ''}">
       <div class="card__body">
         <span class="card__tag${t.featured ? '' : ' card__tag--ghost'}">${esc(t.badge)}</span>
         <h3 class="card__name">${esc(t.name)}</h3>
         <p class="card__desc">${esc(t.desc)}</p>
         <div class="card__price">
-          <b>от 170 ₽/час</b>
+          <b>от ${esc(money(from))}${t.hourly ? '/час' : ''}</b>
           <span>тарифы и бронь — в Langame</span>
         </div>
         <div class="spec">
@@ -707,7 +710,8 @@ function renderTariffs(){
             </div>`).join('')}
         </div>
       </div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
 }
 
 /* ============================== СЛОТЫ ============================== */

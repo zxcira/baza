@@ -16,7 +16,7 @@
   'use strict';
 
   var KEY = 'baza.store.v1';
-  var SCHEMA_VERSION = 1;
+  var SCHEMA_VERSION = 2;
 
   /* ---------------------------------------------------------------- утилиты */
   function dateKey(d) {
@@ -58,6 +58,18 @@
       else out[k] = base[k];
     });
     return out;
+  }
+
+  /* -------------------------------------------------------------- миграции */
+  /* Приводит старые сохранения к текущей схеме, не затирая брони/места.
+     Версия 2: реальные цены за час вместо демо-заглушек. */
+  function migrate(st, fromVersion) {
+    if ((fromVersion || 0) < 2) {
+      if (st.tariffs && st.tariffs.vip) st.tariffs.vip.price = { day: 190, night: 190, full: 190 };
+      if (st.tariffs && st.tariffs.ps)  st.tariffs.ps.price  = { day: 300, night: 300, full: 300 };
+    }
+    st.version = SCHEMA_VERSION;
+    return st;
   }
 
   /* ------------------------------------------------------------ хеш пароля */
@@ -139,7 +151,7 @@
         vip: {
           name: 'VIP', badge: '10 мест', featured: true,
           desc: 'Флагманские стойки: RTX 5060 Ti и 280 Гц.',
-          price: { day: 250, night: 300, full: 250 },   // TODO: сверить с прайсом Langame
+          price: { day: 190, night: 190, full: 190 },   // ₽/час
           hourly: true,
           specs: [
             ['Процессор', 'Intel i5-14400F'],
@@ -151,7 +163,7 @@
         ps: {
           name: 'PlayStation 5', badge: '2 консоли', featured: false,
           desc: 'PS5 с DualSense — отдельная зона, оплата по времени.',
-          price: { day: 250, night: 300, full: 250 },   // TODO: сверить с прайсом Langame
+          price: { day: 300, night: 300, full: 300 },   // ₽/час
           hourly: true,
           specs: [
             ['Консоль', 'Sony PlayStation 5'],
@@ -244,6 +256,10 @@
     }
     /* дополняем недостающие поля, не затирая пользовательские данные */
     state = deepMerge(defaults(), parsed);
+    if ((parsed.version || 0) < SCHEMA_VERSION) {
+      migrate(state, parsed.version);
+      persist();
+    }
     state.version = SCHEMA_VERSION;
     return state;
   }
@@ -278,8 +294,8 @@
   global.addEventListener('storage', function (e) {
     if (e.key !== KEY || !e.newValue) return;
     try {
-      state = deepMerge(defaults(), JSON.parse(e.newValue));
-      state.version = SCHEMA_VERSION;
+      var inc = JSON.parse(e.newValue);
+      state = migrate(deepMerge(defaults(), inc), inc.version);
       emit();
     } catch (err) { /* игнорируем битые данные */ }
   });
