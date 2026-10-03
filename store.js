@@ -16,7 +16,7 @@
   'use strict';
 
   var KEY = 'baza.store.v1';
-  var SCHEMA_VERSION = 2;
+  var SCHEMA_VERSION = 3;
 
   /* ---------------------------------------------------------------- утилиты */
   function dateKey(d) {
@@ -68,6 +68,10 @@
       if (st.tariffs && st.tariffs.vip) st.tariffs.vip.price = { day: 190, night: 190, full: 190 };
       if (st.tariffs && st.tariffs.ps)  st.tariffs.ps.price  = { day: 300, night: 300, full: 300 };
     }
+    if ((fromVersion || 0) < 3 && st.club) {
+      /* ведём на карточку клуба, а не на общую регистрацию */
+      st.club.bookingUrl = 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk';
+    }
     st.version = SCHEMA_VERSION;
     return st;
   }
@@ -101,9 +105,10 @@
         openFrom: '12:00',
         openTo: '02:00',
 
-        /* Куда ведёт кнопка «Забронировать». Бронь и оплата живут в
-           системе клуба (Langame), сайт на неё только ведёт и не дублирует. */
-        bookingUrl: 'https://langame.ru/registration',
+        /* Куда ведёт кнопка «Забронировать». Ведём на карточку клуба в
+           Langame (обычная десктопная страница): оттуда вход/регистрация
+           и бронь. Прямой линк на /booking — это мобильное Flutter-приложение. */
+        bookingUrl: 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk',
 
         /* Связь с Telegram-ботом. Пустые поля = демо-режим: приложение
            работает, но бронь никуда не уходит и живёт в этом устройстве.
