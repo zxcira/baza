@@ -16,7 +16,7 @@
   'use strict';
 
   var KEY = 'baza.store.v1';
-  var SCHEMA_VERSION = 3;
+  var SCHEMA_VERSION = 4;
 
   /* ---------------------------------------------------------------- утилиты */
   function dateKey(d) {
@@ -62,7 +62,9 @@
 
   /* -------------------------------------------------------------- миграции */
   /* Приводит старые сохранения к текущей схеме, не затирая брони/места.
-     Версия 2: реальные цены за час вместо демо-заглушек. */
+     Версия 2: реальные цены за час вместо демо-заглушек.
+     Версия 3: кнопка брони ведёт на карточку клуба в Langame.
+     Версия 4: смена общеизвестных демо-паролей на рабочие. */
   function migrate(st, fromVersion) {
     if ((fromVersion || 0) < 2) {
       if (st.tariffs && st.tariffs.vip) st.tariffs.vip.price = { day: 190, night: 190, full: 190 };
@@ -71,6 +73,14 @@
     if ((fromVersion || 0) < 3 && st.club) {
       /* ведём на карточку клуба, а не на общую регистрацию */
       st.club.bookingUrl = 'https://langame.ru/799459198_computerniy_club_baza_snezhinsk';
+    }
+    if ((fromVersion || 0) < 4 && st.users) {
+      /* меняем демо-пароли только если они ещё не тронуты пользователем */
+      var oldOwner = hash('baza'), oldAdmin = hash('admin');
+      st.users.forEach(function (u) {
+        if (u.login === 'owner' && u.pass === oldOwner) u.pass = hash('BazaOwner2026');
+        if (u.login === 'admin' && u.pass === oldAdmin) u.pass = hash('BazaSmena2026');
+      });
     }
     st.version = SCHEMA_VERSION;
     return st;
@@ -194,10 +204,12 @@
       bookings: [],
 
       users: [
+        /* Стартовые пароли. Сменить сразу после передачи: админ-панель
+           доступна публично по адресу <сайт>/admin.html. */
         { id: 'u_owner', login: 'owner', name: 'Владелец', role: 'owner',
-          pass: hash('baza') },
+          pass: hash('BazaOwner2026') },
         { id: 'u_admin', login: 'admin', name: 'Смена', role: 'admin',
-          pass: hash('admin') },
+          pass: hash('BazaSmena2026') },
       ],
 
       audit: [],
