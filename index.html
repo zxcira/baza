@@ -119,6 +119,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
 .btn--ghost:hover{border-color:var(--acc-dim);color:var(--acc-dim);background:rgba(0,255,102,.05)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
+/* Звонок: на телефоне — кнопка с tel:, на ПК звонить некуда — показываем номер */
+.call-num{display:none;font-variant-numeric:tabular-nums;user-select:all}
+@media (hover:hover) and (pointer:fine){
+  .call-label{display:none}
+  .call-num{display:inline}
+}
+
 /* ============================ hero ============================ */
 .hero{position:relative;padding:var(--s8) 0 var(--s7);overflow:hidden}
 .hero__bg{
@@ -197,11 +204,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
 .card__price b{font:700 1.5rem/1 var(--f-mono);color:var(--acc-dim);font-variant-numeric:tabular-nums}
 .card__price span{font-size:12.5px;color:var(--fg-muted)}
 
-.spec{display:grid;gap:var(--s2)}
-.spec__row{display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center;font-size:13.5px}
+.spec{display:grid;grid-template-columns:auto auto 1fr;gap:var(--s2) var(--s3);align-items:center;font-size:13.5px}
+.spec__row{display:contents}
 .spec__row svg{width:15px;height:15px;color:var(--acc-dim);flex:none}
 .spec__row span{color:var(--fg-muted);white-space:nowrap}
-.spec__row b{color:var(--fg-2);font-weight:500;text-align:right;overflow-wrap:anywhere}
+.spec__row b{color:var(--fg-2);font-weight:500;overflow-wrap:anywhere}
 
 .tariff-note{margin-top:var(--s5);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4);color:var(--fg-muted);font-size:14px}
 
@@ -406,9 +413,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
             Забронировать онлайн
           </a>
-          <a class="btn btn--ghost" id="heroCall" href="tel:+79939305556">
+          <a class="btn btn--ghost call-link" id="heroCall" href="tel:+79939305556" title="Позвонить">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            Позвонить
+            <span class="call-label">Позвонить</span><span class="call-num">+7 993 930-55-56</span>
           </a>
           <a class="btn btn--ghost" href="#map">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
@@ -443,9 +450,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
           Открыть тарифы и забронировать
         </a>
-        <a class="btn btn--ghost" id="tariffCall" href="tel:+79939305556">
+        <a class="btn btn--ghost call-link" id="tariffCall" href="tel:+79939305556" title="Позвонить">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          Позвонить
+          <span class="call-label">Позвонить</span><span class="call-num">+7 993 930-55-56</span>
         </a>
       </p>
     </div>
@@ -491,7 +498,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.02;letter-sp
         <div class="row"><dt>Город</dt><dd id="cCity">Снежинск, Челябинская обл.</dd></div>
         <div class="row"><dt>Часы</dt><dd id="cHours">Ежедневно 12:00 — 02:00</dd></div>
         <div class="row"><dt>Оплата</dt><dd id="cPay">Наличные · карты · СБП</dd></div>
-        <div class="row"><dt>Телефон</dt><dd><a id="cPhone" href="tel:+79939305556">+7 993 930-55-56</a></dd></div>
+        <div class="row"><dt>Телефон</dt><dd><a class="call-link" id="cPhone" href="tel:+79939305556" title="Позвонить или скопировать">+7 993 930-55-56</a></dd></div>
         <div class="row"><dt>Почта</dt><dd id="cEmail">baza_snz@mail.ru</dd></div>
       </dl>
       <p class="foot__note" style="border:0;padding:0;margin:var(--s5) 0 0;max-width:560px">
@@ -563,6 +570,42 @@ const phoneHref = () => {
   const digits = String((data().club && data().club.phone) || '').replace(/[^\d+]/g, '');
   return digits ? 'tel:' + digits : '#contacts';
 };
+
+/* На телефоне кнопка звонит (tel:). На ПК звонить некуда, поэтому вместо
+   слова «Позвонить» показываем номер и по клику копируем его в буфер. */
+const isDesktop = () => !!(window.matchMedia
+  && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+function toast(msg){
+  let t = document.getElementById('toast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('toast--in');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => t.classList.remove('toast--in'), 2200);
+}
+
+document.addEventListener('click', e => {
+  const link = e.target.closest && e.target.closest('.call-link');
+  if (!link || !isDesktop()) return;              // на телефоне — работает tel:
+  const phone = (data().club && data().club.phone) || '';
+  if (!phone) return;
+  e.preventDefault();
+  const fallback = () => toast('Позвоните: ' + phone);;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(phone).then(
+      () => toast('Номер скопирован: ' + phone),
+      fallback
+    );
+  } else {
+    fallback();
+  }
+});
 const slotDef   = id => data().slots.find(s => s.id === id) || data().slots[0];
 const tariffDef = id => data().tariffs[id];
 const priceNum  = (t, s) => tariffDef(t).price[s] || 0;
@@ -750,9 +793,9 @@ function bookLink(){
       ${svg(ICON.link)}
       Забронировать онлайн
     </a>
-    <a class="btn btn--ghost" href="${esc(phoneHref())}">
+    <a class="btn btn--ghost call-link" href="${esc(phoneHref())}" title="Позвонить">
       ${svg(ICON.phone)}
-      Позвонить
+      <span class="call-label">Позвонить</span><span class="call-num">${esc((data().club && data().club.phone) || '')}</span>
     </a>`;
 }
 
@@ -807,10 +850,8 @@ function renderStatus(){
 
   const book = $('#heroBook');
   if (book) book.href = club.bookingUrl || BOOK_FALLBACK;
-  const call = $('#heroCall');
-  if (call) call.href = phoneHref();
-  const tcall = $('#tariffCall');
-  if (tcall) tcall.href = phoneHref();
+  $$('.call-link').forEach(a => { a.href = phoneHref(); });
+  $$('.call-num').forEach(el => { el.textContent = club.phone || ''; });
   const cphone = $('#cPhone');
   if (cphone) cphone.href = phoneHref();
   $('#cAddress').textContent = club.address;
